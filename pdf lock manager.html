@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexi - PDF Lock Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #8B0000;
+            border: 2px solid #8B0000;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .header p {
+            color: #ffffff;
+            font-size: 1.1em;
+        }
+        .controls {
+            background: #000000;
+            border: 2px solid #8B0000;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .filter-group label {
+            color: #ffffff;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            padding: 10px 15px;
+            border: 2px solid #8B0000;
+            border-radius: 5px;
+            background: #000000;
+            color: #ffffff;
+            font-size: 14px;
+            min-width: 250px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+        select {
+            padding: 10px 15px;
+            border: 2px solid #8B0000;
+            border-radius: 5px;
+            background: #000000;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 180px;
+        }
+        select:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+        .refresh-btn {
+            padding: 10px 25px;
+            background: #8B0000;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+        .refresh-btn:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+        }
+        .refresh-btn:disabled {
+            background: #555555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #000000;
+            border: 2px solid #8B0000;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+        }
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #8B0000;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .pdf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .pdf-card {
+            background: #000000;
+            border: 2px solid #8B0000;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .pdf-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+        }
+        .pdf-card.locked {
+            border-color: #dc3545;
+        }
+        .pdf-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .pdf-icon {
+            font-size: 2em;
+        }
+        .pdf-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #ffffff;
+            word-break: break-word;
+        }
+        .pdf-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .status-available {
+            background: #28a745;
+            color: #ffffff;
+        }
+        .status-locked {
+            background: #dc3545;
+            color: #ffffff;
+        }
+        .pdf-info {
+            color: #ffffff;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .pdf-info strong {
+            color: #8B0000;
+        }
+        .pdf-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+        }
+        .btn-lock {
+            background: #8B0000;
+            color: #ffffff;
+        }
+        .btn-lock:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+        }
+        .btn-unlock {
+            background: #28a745;
+            color: #ffffff;
+        }
+        .btn-unlock:hover {
+            background: #32cd32;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        .btn:disabled {
+            background: #555555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #ffffff;
+            font-size: 1.2em;
+        }
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #ffffff;
+            font-size: 1.2em;
+        }
+        .info-banner {
+            background: #000000;
+            border: 2px solid #8B0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+        .info-banner h3 {
+            color: #8B0000;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-banner ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        @media (max-width: 768px) {
+            .pdf-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            input[type="text"],
+            select {
+                width: 100%;
+                min-width: auto;
+            }
+            .refresh-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 PDF LOCK MANAGER</h1>
+            <p>Coordinate PDF access to prevent file corruption</p>
+        </div>
+
+        <div class="info-banner">
+            <h3>📋 Important Instructions</h3>
+            <ul>
+                <li><strong>Lock a PDF</strong> before opening it on your tablet</li>
+                <li><strong>Only open PDFs</strong> that show "Available" status</li>
+                <li><strong>Unlock when done</strong> so others can access the file</li>
+                <li><strong>Check this page first</strong> before opening any PDF</li>
+            </ul>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label>SEARCH PDFs</label>
+                <input type="text" id="searchInput" placeholder="Type to search by filename...">
+            </div>
+            <div class="filter-group">
+                <label>FILTER BY STATUS</label>
+                <select id="statusFilter">
+                    <option value="all">All Files</option>
+                    <option value="available">Available Only</option>
+                    <option value="locked">Locked Only</option>
+                </select>
+            </div>
+            <button class="refresh-btn" onclick="loadPDFs()">🔄 REFRESH</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-number" id="totalFiles">0</div>
+                <div class="stat-label">Total Files</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" id="availableFiles">0</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔒</div>
+                <div class="stat-number" id="lockedFiles">0</div>
+                <div class="stat-label">Locked</div>
+            </div>
+        </div>
+
+        <div id="pdfGrid" class="pdf-grid">
+            <div class="loading">Loading PDF files...</div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKwlqFBbP-zgtilae3_u1cfKJPIL5xTEbHfDa2UVAPcRuwTTMaU4zEx8AiGr038wE/exec';
+        let allPDFs = [];
+        let filteredPDFs = [];
+
+        // Load PDFs on page load
+        window.addEventListener('load', loadPDFs);
+
+        // Search and filter listeners
+        document.getElementById('searchInput').addEventListener('input', filterPDFs);
+        document.getElementById('statusFilter').addEventListener('change', filterPDFs);
+
+        async function loadPDFs() {
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=listPDFs');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    allPDFs = data.pdfs || [];
+                    filterPDFs();
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error loading PDFs:', error);
+                document.getElementById('pdfGrid').innerHTML = 
+                    '<div class="no-data">⚠️ Error loading PDF files. Please refresh the page.</div>';
+            }
+        }
+
+        function filterPDFs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredPDFs = allPDFs.filter(pdf => {
+                const matchesSearch = pdf.name.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || 
+                    (statusFilter === 'available' && !pdf.lockedBy) ||
+                    (statusFilter === 'locked' && pdf.lockedBy);
+                return matchesSearch && matchesStatus;
+            });
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            updateStats();
+            renderPDFCards();
+        }
+
+        function updateStats() {
+            const total = filteredPDFs.length;
+            const available = filteredPDFs.filter(pdf => !pdf.lockedBy).length;
+            const locked = filteredPDFs.filter(pdf => pdf.lockedBy).length;
+
+            document.getElementById('totalFiles').textContent = total;
+            document.getElementById('availableFiles').textContent = available;
+            document.getElementById('lockedFiles').textContent = locked;
+        }
+
+        function renderPDFCards() {
+            const grid = document.getElementById('pdfGrid');
+            
+            if (filteredPDFs.length === 0) {
+                grid.innerHTML = '<div class="no-data">No PDF files found</div>';
+                return;
+            }
+
+            grid.innerHTML = filteredPDFs.map(pdf => {
+                const isLocked = pdf.lockedBy;
+                const statusClass = isLocked ? 'status-locked' : 'status-available';
+                const statusText = isLocked ? '🔒 LOCKED' : '✅ AVAILABLE';
+                const cardClass = isLocked ? 'pdf-card locked' : 'pdf-card';
+
+                return `
+                    <div class="${cardClass}">
+                        <div class="pdf-header">
+                            <span class="pdf-icon">📄</span>
+                            <div class="pdf-name">${pdf.name}</div>
+                        </div>
+                        <div class="pdf-status ${statusClass}">
+                            ${statusText}
+                        </div>
+                        ${isLocked ? `
+                            <div class="pdf-info">
+                                <strong>Locked by:</strong> ${pdf.lockedBy}
+                            </div>
+                            <div class="pdf-info">
+                                <strong>Since:</strong> ${new Date(pdf.lockedAt).toLocaleString()}
+                            </div>
+                        ` : ''}
+                        <div class="pdf-actions">
+                            ${!isLocked ? `
+                                <button class="btn btn-lock" onclick="lockPDF('${pdf.id}', '${pdf.name.replace(/'/g, "\\'")}')">
+                                    🔒 LOCK FILE
+                                </button>
+                            ` : `
+                                <button class="btn btn-unlock" onclick="unlockPDF('${pdf.id}', '${pdf.name.replace(/'/g, "\\'")}')">
+                                    🔓 UNLOCK FILE
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function lockPDF(fileId, fileName) {
+            const userName = prompt('Enter your name to lock this file:');
+            if (!userName || userName.trim() === '') {
+                alert('You must enter your name to lock a file');
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=lockPDF&fileId=${fileId}&userName=${encodeURIComponent(userName.trim())}`
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert(`✅ Successfully locked: ${fileName}\n\nYou can now safely open this file on your tablet.`);
+                    loadPDFs();
+                } else {
+                    alert(`❌ ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error locking PDF:', error);
+                alert('❌ Error locking file. Please try again.');
+            }
+        }
+
+        async function unlockPDF(fileId, fileName) {
+            if (!confirm(`Are you sure you want to unlock:\n${fileName}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=unlockPDF&fileId=${fileId}`
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert(`✅ Successfully unlocked: ${fileName}\n\nOthers can now access this file.`);
+                    loadPDFs();
+                } else {
+                    alert(`❌ ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error unlocking PDF:', error);
+                alert('❌ Error unlocking file. Please try again.');
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadPDFs, 30000);
+    </script>
+</body>
+</html>
