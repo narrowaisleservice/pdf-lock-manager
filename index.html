@@ -950,10 +950,10 @@
                 activityLog = activityLog.slice(0, 20);
             }
             
-            updateActivityFeed();
+            updateActivityFeed(true); // Force full render for new items
         }
 
-        function updateActivityFeed() {
+        function updateActivityFeed(forceRender = false) {
             const activityList = document.getElementById('activityList');
             
             if (activityLog.length === 0) {
@@ -961,25 +961,42 @@
                 return;
             }
             
-            activityList.innerHTML = activityLog.map(activity => {
-                const timeAgo = getTimeAgo(activity.timestamp);
-                const icon = activity.type === 'locked' ? '🔒' : '🔓';
-                const actionText = activity.type === 'locked' 
-                    ? `${activity.userName} locked` 
-                    : `${activity.userName || 'Someone'} unlocked`;
-                
-                return `
-                    <div class="activity-item ${activity.type}">
-                        <div class="activity-text">
-                            <span class="activity-icon">${icon}</span>
-                            <strong>${actionText}</strong>
-                            <br>
-                            ${activity.fileName}
+            // Only fully re-render if forced (when new activity added)
+            if (forceRender) {
+                activityList.innerHTML = activityLog.map((activity, index) => {
+                    const timeAgo = getTimeAgo(activity.timestamp);
+                    const icon = activity.type === 'locked' ? '🔒' : '🔓';
+                    const actionText = activity.type === 'locked' 
+                        ? `${activity.userName} locked` 
+                        : `${activity.userName || 'Someone'} unlocked`;
+                    
+                    return `
+                        <div class="activity-item ${activity.type}" data-activity-index="${index}">
+                            <div class="activity-text">
+                                <span class="activity-icon">${icon}</span>
+                                <strong>${actionText}</strong>
+                                <br>
+                                ${activity.fileName}
+                            </div>
+                            <div class="activity-time">${timeAgo}</div>
                         </div>
-                        <div class="activity-time">${timeAgo}</div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            } else {
+                // Just update timestamps without re-rendering
+                const items = activityList.querySelectorAll('.activity-item');
+                items.forEach((item, index) => {
+                    if (activityLog[index]) {
+                        const timeElement = item.querySelector('.activity-time');
+                        if (timeElement) {
+                            const newTimeAgo = getTimeAgo(activityLog[index].timestamp);
+                            if (timeElement.textContent !== newTimeAgo) {
+                                timeElement.textContent = newTimeAgo;
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         function getTimeAgo(timestamp) {
@@ -1030,8 +1047,8 @@
                 }
             });
             
-            // Update activity feed timestamps
-            updateActivityFeed();
+            // Update activity feed timestamps (without re-rendering)
+            updateActivityFeed(false);
         }
 
         async function loadPDFs() {
