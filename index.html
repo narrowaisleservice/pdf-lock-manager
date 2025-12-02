@@ -12,33 +12,250 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a1a;
+            background: transparent;
             color: #ffffff;
-            min-height: 100vh;
             padding: 20px;
         }
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
+        
+        /* Animated header with pulsing effect */
         .header {
-            background: #8B0000;
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
             border: 2px solid #8B0000;
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: headerPulse 3s ease-in-out infinite;
         }
+        
+        @keyframes headerPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(139, 0, 0, 0.8); }
+        }
+        
+        /* Animated background effect */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
         .header h1 {
             font-size: 2.5em;
             color: #ffffff;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            animation: titleFloat 3s ease-in-out infinite;
         }
+        
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
         .header p {
             color: #ffffff;
             font-size: 1.1em;
+            position: relative;
+            z-index: 1;
         }
+        
+        /* Live update indicator */
+        .live-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000000;
+            border: 2px solid #28a745;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+        
+        .live-text {
+            color: #28a745;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        /* Main layout grid for activity feed */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-column {
+            min-width: 0;
+        }
+        
+        .right-column {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+        }
+        
+        /* Activity Feed */
+        .activity-feed {
+            background: #000000;
+            border: 2px solid #8B0000;
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            animation: slideInRight 0.6s ease-out;
+        }
+        
+        .activity-feed::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .activity-feed::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+        
+        .activity-feed::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 10px;
+        }
+        
+        .activity-feed::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
+        }
+        
+        .activity-feed h3 {
+            color: #8B0000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .activity-feed h3::before {
+            content: '📊';
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .activity-item {
+            background: #1a1a1a;
+            border-left: 3px solid #8B0000;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 10px;
+            animation: slideInLeft 0.3s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            border-left-color: #ff0000;
+        }
+        
+        .activity-item.locked {
+            border-left-color: #dc3545;
+        }
+        
+        .activity-item.unlocked {
+            border-left-color: #28a745;
+        }
+        
+        .activity-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .activity-text {
+            color: #ffffff;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+        
+        .activity-time {
+            color: #888888;
+            font-size: 0.75em;
+        }
+        
+        .activity-empty {
+            text-align: center;
+            color: #666666;
+            padding: 30px;
+            font-style: italic;
+        }
+        
         .controls {
             background: #000000;
             border: 2px solid #8B0000;
@@ -49,7 +266,20 @@
             gap: 15px;
             flex-wrap: wrap;
             align-items: center;
+            animation: slideInUp 0.6s ease-out;
         }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
         .filter-group {
             display: flex;
             flex-direction: column;
@@ -70,11 +300,13 @@
             color: #ffffff;
             font-size: 14px;
             min-width: 250px;
+            transition: all 0.3s ease;
         }
         input[type="text"]:focus {
             outline: none;
             border-color: #ff0000;
-            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+            transform: scale(1.02);
         }
         select {
             padding: 10px 15px;
@@ -85,11 +317,12 @@
             font-size: 14px;
             cursor: pointer;
             min-width: 180px;
+            transition: all 0.3s ease;
         }
         select:focus {
             outline: none;
             border-color: #ff0000;
-            box-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
         }
         .refresh-btn {
             padding: 10px 25px;
@@ -103,17 +336,61 @@
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
             align-self: flex-end;
+            position: relative;
+            overflow: hidden;
         }
+        
+        /* Button shine effect */
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .refresh-btn:hover::before {
+            left: 100%;
+        }
+        
         .refresh-btn:hover {
             background: #ff0000;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 20px rgba(139, 0, 0, 0.6);
         }
+        
+        .refresh-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
         .refresh-btn:disabled {
             background: #555555;
             cursor: not-allowed;
             transform: none;
         }
+        
+        /* Animated spinning refresh icon */
+        .refresh-btn.refreshing {
+            pointer-events: none;
+        }
+        
+        .refresh-btn.refreshing::after {
+            content: '🔄';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -127,21 +404,49 @@
             padding: 25px;
             text-align: center;
             transition: all 0.3s ease;
+            animation: fadeInScale 0.6s ease-out backwards;
+            cursor: pointer;
         }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(139, 0, 0, 0.5);
+            border-color: #ff0000;
         }
         .stat-icon {
             font-size: 2.5em;
             margin-bottom: 10px;
+            animation: bounce 2s ease-in-out infinite;
         }
+        
         .stat-number {
             font-size: 3em;
             font-weight: bold;
             color: #8B0000;
             margin-bottom: 5px;
+            transition: all 0.3s ease;
         }
+        
+        .stat-card:hover .stat-number {
+            color: #ff0000;
+            transform: scale(1.1);
+        }
+        
         .stat-label {
             color: #ffffff;
             text-transform: uppercase;
@@ -161,14 +466,53 @@
             border-radius: 10px;
             padding: 20px;
             transition: all 0.3s ease;
+            animation: fadeInSlide 0.5s ease-out backwards;
+            position: relative;
+            overflow: hidden;
         }
+        
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
         .pdf-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(139, 0, 0, 0.4);
+            border-color: #ff0000;
         }
+        
+        /* Glowing effect for available files */
+        .pdf-card:not(.locked):hover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(139, 0, 0, 0.1) 0%, transparent 70%);
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
         .pdf-card.locked {
             border-color: #dc3545;
         }
+        
+        .pdf-card.locked:hover {
+            box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
+        }
+        
         .pdf-header {
             display: flex;
             align-items: center;
@@ -177,7 +521,15 @@
         }
         .pdf-icon {
             font-size: 2em;
+            animation: wiggle 3s ease-in-out infinite;
         }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+        
         .pdf-name {
             flex: 1;
             font-weight: 600;
@@ -195,14 +547,23 @@
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 15px;
+            animation: statusPulse 2s ease-in-out infinite;
         }
+        
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
         .status-available {
             background: #28a745;
             color: #ffffff;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
         }
         .status-locked {
             background: #dc3545;
             color: #ffffff;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
         }
         .pdf-info {
             color: #ffffff;
@@ -212,6 +573,58 @@
         .pdf-info strong {
             color: #8B0000;
         }
+        
+        /* Countdown Timer */
+        .countdown-timer {
+            background: #1a1a1a;
+            border: 2px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            animation: timerPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { border-color: #ff6b6b; }
+            50% { border-color: #ff0000; }
+        }
+        
+        .countdown-label {
+            color: #ff6b6b;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .countdown-time {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .countdown-time.warning {
+            color: #ffa500;
+            animation: warningBlink 1s ease-in-out infinite;
+        }
+        
+        .countdown-time.critical {
+            color: #ff0000;
+            animation: criticalBlink 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes warningBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes criticalBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
         .pdf-actions {
             display: flex;
             gap: 10px;
@@ -228,15 +641,36 @@
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
             font-size: 0.85em;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
         .btn-lock {
             background: #8B0000;
             color: #ffffff;
         }
         .btn-lock:hover {
             background: #ff0000;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.5);
         }
         .btn-unlock {
             background: #28a745;
@@ -244,8 +678,8 @@
         }
         .btn-unlock:hover {
             background: #32cd32;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.5);
         }
         .btn:disabled {
             background: #555555;
@@ -257,7 +691,25 @@
             padding: 50px;
             color: #ffffff;
             font-size: 1.2em;
+            animation: fadeIn 0.5s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
         .no-data {
             text-align: center;
             padding: 50px;
@@ -271,6 +723,7 @@
             padding: 20px;
             margin-bottom: 30px;
             color: #ffffff;
+            animation: slideInUp 0.7s ease-out;
         }
         .info-banner h3 {
             color: #8B0000;
@@ -283,6 +736,66 @@
             margin-left: 20px;
             line-height: 1.8;
         }
+        
+        /* Success/Error toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideInBottom 0.5s ease-out, slideOutBottom 0.5s ease-in 2.5s forwards;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes slideInBottom {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutBottom {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+        
+        .toast.success {
+            background: #28a745;
+        }
+        
+        .toast.error {
+            background: #dc3545;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .right-column {
+                position: relative;
+                top: 0;
+            }
+            
+            .activity-feed {
+                max-height: 400px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .pdf-grid {
                 grid-template-columns: 1fr;
@@ -308,10 +821,20 @@
             .refresh-btn {
                 width: 100%;
             }
+            .live-indicator {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Live update indicator -->
+    <div class="live-indicator">
+        <div class="live-dot"></div>
+        <div class="live-text">Live</div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🔒 PDF LOCK MANAGER</h1>
@@ -345,25 +868,38 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" onclick="document.getElementById('statusFilter').value='all'; filterPDFs();">
                 <div class="stat-icon">📄</div>
                 <div class="stat-number" id="totalFiles">0</div>
                 <div class="stat-label">Total Files</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="document.getElementById('statusFilter').value='available'; filterPDFs();">
                 <div class="stat-icon">✅</div>
                 <div class="stat-number" id="availableFiles">0</div>
                 <div class="stat-label">Available</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="document.getElementById('statusFilter').value='locked'; filterPDFs();">
                 <div class="stat-icon">🔒</div>
                 <div class="stat-number" id="lockedFiles">0</div>
                 <div class="stat-label">Locked</div>
             </div>
         </div>
 
-        <div id="pdfGrid" class="pdf-grid">
-            <div class="loading">Loading PDF files...</div>
+        <div class="main-content">
+            <div class="left-column">
+                <div id="pdfGrid" class="pdf-grid">
+                    <div class="loading">Loading PDF files</div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="activity-feed">
+                    <h3>Live Activity</h3>
+                    <div id="activityList">
+                        <div class="activity-empty">No recent activity</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -371,15 +907,137 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKwlqFBbP-zgtilae3_u1cfKJPIL5xTEbHfDa2UVAPcRuwTTMaU4zEx8AiGr038wE/exec';
         let allPDFs = [];
         let filteredPDFs = [];
+        let activityLog = [];
+        let countdownIntervals = {};
 
         // Load PDFs on page load
-        window.addEventListener('load', loadPDFs);
+        window.addEventListener('load', () => {
+            loadPDFs();
+            // Update countdown timers every second
+            setInterval(updateAllCountdowns, 1000);
+        });
 
         // Search and filter listeners
         document.getElementById('searchInput').addEventListener('input', filterPDFs);
         document.getElementById('statusFilter').addEventListener('change', filterPDFs);
 
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Add activity to the feed
+        function addActivity(type, fileName, userName = null) {
+            const now = new Date();
+            const activity = {
+                type: type, // 'locked' or 'unlocked'
+                fileName: fileName,
+                userName: userName,
+                timestamp: now
+            };
+            
+            activityLog.unshift(activity);
+            
+            // Keep only last 20 activities
+            if (activityLog.length > 20) {
+                activityLog = activityLog.slice(0, 20);
+            }
+            
+            updateActivityFeed();
+        }
+
+        function updateActivityFeed() {
+            const activityList = document.getElementById('activityList');
+            
+            if (activityLog.length === 0) {
+                activityList.innerHTML = '<div class="activity-empty">No recent activity</div>';
+                return;
+            }
+            
+            activityList.innerHTML = activityLog.map(activity => {
+                const timeAgo = getTimeAgo(activity.timestamp);
+                const icon = activity.type === 'locked' ? '🔒' : '🔓';
+                const actionText = activity.type === 'locked' 
+                    ? `${activity.userName} locked` 
+                    : `${activity.userName || 'Someone'} unlocked`;
+                
+                return `
+                    <div class="activity-item ${activity.type}">
+                        <div class="activity-text">
+                            <span class="activity-icon">${icon}</span>
+                            <strong>${actionText}</strong>
+                            <br>
+                            ${activity.fileName}
+                        </div>
+                        <div class="activity-time">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((new Date() - timestamp) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            return `${Math.floor(seconds / 86400)}d ago`;
+        }
+
+        // Calculate time elapsed since lock
+        function getTimeSinceLock(lockedAt) {
+            const now = new Date();
+            const lockTime = new Date(lockedAt);
+            const diff = now - lockTime;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return { hours, minutes, seconds, totalMinutes: hours * 60 + minutes };
+        }
+
+        function formatCountdown(timeSince) {
+            const h = String(timeSince.hours).padStart(2, '0');
+            const m = String(timeSince.minutes).padStart(2, '0');
+            const s = String(timeSince.seconds).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function updateAllCountdowns() {
+            filteredPDFs.forEach(pdf => {
+                if (pdf.lockedBy && pdf.lockedAt) {
+                    const element = document.getElementById(`countdown-${pdf.id}`);
+                    if (element) {
+                        const timeSince = getTimeSinceLock(pdf.lockedAt);
+                        element.textContent = formatCountdown(timeSince);
+                        
+                        // Add warning/critical classes based on time
+                        element.classList.remove('warning', 'critical');
+                        if (timeSince.totalMinutes > 120) { // 2 hours
+                            element.classList.add('critical');
+                        } else if (timeSince.totalMinutes > 60) { // 1 hour
+                            element.classList.add('warning');
+                        }
+                    }
+                }
+            });
+            
+            // Update activity feed timestamps
+            updateActivityFeed();
+        }
+
         async function loadPDFs() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.classList.add('refreshing');
+            
             try {
                 const response = await fetch(SCRIPT_URL + '?action=listPDFs');
                 const data = await response.json();
@@ -394,6 +1052,9 @@
                 console.error('Error loading PDFs:', error);
                 document.getElementById('pdfGrid').innerHTML = 
                     '<div class="no-data">⚠️ Error loading PDF files. Please refresh the page.</div>';
+                showToast('Failed to load PDFs', 'error');
+            } finally {
+                refreshBtn.classList.remove('refreshing');
             }
         }
 
@@ -422,9 +1083,33 @@
             const available = filteredPDFs.filter(pdf => !pdf.lockedBy).length;
             const locked = filteredPDFs.filter(pdf => pdf.lockedBy).length;
 
-            document.getElementById('totalFiles').textContent = total;
-            document.getElementById('availableFiles').textContent = available;
-            document.getElementById('lockedFiles').textContent = locked;
+            animateNumber('totalFiles', total);
+            animateNumber('availableFiles', available);
+            animateNumber('lockedFiles', locked);
+        }
+
+        // Animated number counter
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            const currentNumber = parseInt(element.textContent) || 0;
+            
+            if (currentNumber === targetNumber) return;
+            
+            const duration = 500;
+            const steps = 20;
+            const stepValue = (targetNumber - currentNumber) / steps;
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                currentStep++;
+                const newValue = Math.round(currentNumber + (stepValue * currentStep));
+                element.textContent = newValue;
+                
+                if (currentStep >= steps) {
+                    element.textContent = targetNumber;
+                    clearInterval(interval);
+                }
+            }, duration / steps);
         }
 
         function renderPDFCards() {
@@ -435,14 +1120,30 @@
                 return;
             }
 
-            grid.innerHTML = filteredPDFs.map(pdf => {
+            grid.innerHTML = filteredPDFs.map((pdf, index) => {
                 const isLocked = pdf.lockedBy;
                 const statusClass = isLocked ? 'status-locked' : 'status-available';
                 const statusText = isLocked ? '🔒 LOCKED' : '✅ AVAILABLE';
                 const cardClass = isLocked ? 'pdf-card locked' : 'pdf-card';
+                
+                let countdownHTML = '';
+                if (isLocked && pdf.lockedAt) {
+                    const timeSince = getTimeSinceLock(pdf.lockedAt);
+                    const timeClass = timeSince.totalMinutes > 120 ? 'critical' : 
+                                     timeSince.totalMinutes > 60 ? 'warning' : '';
+                    
+                    countdownHTML = `
+                        <div class="countdown-timer">
+                            <div class="countdown-label">⏱️ Locked For</div>
+                            <div class="countdown-time ${timeClass}" id="countdown-${pdf.id}">
+                                ${formatCountdown(timeSince)}
+                            </div>
+                        </div>
+                    `;
+                }
 
                 return `
-                    <div class="${cardClass}">
+                    <div class="${cardClass}" style="animation-delay: ${index * 0.05}s;">
                         <div class="pdf-header">
                             <span class="pdf-icon">📄</span>
                             <div class="pdf-name">${pdf.name}</div>
@@ -451,6 +1152,7 @@
                             ${statusText}
                         </div>
                         ${isLocked ? `
+                            ${countdownHTML}
                             <div class="pdf-info">
                                 <strong>Locked by:</strong> ${pdf.lockedBy}
                             </div>
@@ -477,7 +1179,7 @@
         async function lockPDF(fileId, fileName) {
             const userName = prompt('Enter your name to lock this file:');
             if (!userName || userName.trim() === '') {
-                alert('You must enter your name to lock a file');
+                showToast('Name is required to lock a file', 'error');
                 return;
             }
 
@@ -491,19 +1193,20 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    alert(`✅ Successfully locked: ${fileName}\n\nYou can now safely open this file on your tablet.`);
+                    showToast(`🔒 Locked: ${fileName}`, 'success');
+                    addActivity('locked', fileName, userName.trim());
                     loadPDFs();
                 } else {
-                    alert(`❌ ${data.message}`);
+                    showToast(data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error locking PDF:', error);
-                alert('❌ Error locking file. Please try again.');
+                showToast('Error locking file', 'error');
             }
         }
 
         async function unlockPDF(fileId, fileName) {
-            if (!confirm(`Are you sure you want to unlock:\n${fileName}?`)) {
+            if (!confirm(`Unlock: ${fileName}?`)) {
                 return;
             }
 
@@ -517,14 +1220,15 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    alert(`✅ Successfully unlocked: ${fileName}\n\nOthers can now access this file.`);
+                    showToast(`🔓 Unlocked: ${fileName}`, 'success');
+                    addActivity('unlocked', fileName);
                     loadPDFs();
                 } else {
-                    alert(`❌ ${data.message}`);
+                    showToast(data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error unlocking PDF:', error);
-                alert('❌ Error unlocking file. Please try again.');
+                showToast('Error unlocking file', 'error');
             }
         }
 
